@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
+  <title>Label Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --surface: #ffffff;
+      --text: #2c2c2a;
+      --text-muted: #8c8c88;
+      --border: #e6e6e2;
+      --accent: #8ba888;
+      --accent-hover: #789675;
+      --shadow: 0 8px 30px rgba(0,0,0,0.03);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+    body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+    .sidebar {
+      width: 440px; min-width: 440px; background: var(--surface); padding: 24px 30px;
+      overflow-y: auto; box-shadow: var(--shadow); z-index: 10;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    header h1 { font-size: 24px; font-weight: 500; color: var(--text); letter-spacing: -0.5px; margin-bottom: 2px; }
+    header p { font-size: 13px; color: var(--text-muted); font-weight: 300; }
+
+    .section-title {
+      font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px;
+      padding-bottom: 4px; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 12px; font-weight: 500; color: var(--text); }
+    .form-group input {
+      padding: 10px 14px; background: var(--bg); border: 1px solid transparent;
+      border-radius: 8px; color: var(--text); font-size: 13px; font-weight: 400;
+      transition: all 0.3s ease;
+    }
+    .form-group input:focus {
+      background: var(--surface); border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139, 168, 136, 0.15); outline: none;
+    }
+    
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .action-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 8px; padding-bottom: 0px; }
+    .btn {
+      padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer;
+      font-size: 14px; font-weight: 500; transition: all 0.3s ease;
+      display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(139, 168, 136, 0.25); }
+    .btn-secondary { background: var(--bg); color: var(--text); }
+    .btn-secondary:hover { background: #ebebe6; }
+
+    .preview-panel {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 40px; background: radial-gradient(circle at center, #fcfcfc 0%, #f0f0eb 100%);
+      overflow: auto;
+    }
+    .a4-preview-container {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    }
+    .a4-preview {
+      width: 210mm; min-height: 297mm; background: white; 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03);
+      padding: 20mm; transform-origin: center;
+    }
+    
+    /* Scale logic for different screens */
+    @media (max-width: 1600px) { .a4-preview { transform: scale(0.8); } }
+    @media (max-width: 1300px) { .a4-preview { transform: scale(0.65); } }
+    @media (max-width: 1100px) { .a4-preview { transform: scale(0.5); } }
+
+    /* Label Styling to match user's image exactly */
+    .label-box { width: 100%; border-collapse: collapse; font-family: 'Times New Roman', Times, serif; }
+    .label-box td { border: 1.5px solid #000; padding: 12px; vertical-align: top; }
+    
+    .lbl-title { font-weight: bold; font-size: 16px; margin-bottom: 8px; text-transform: uppercase; }
+    .lbl-company { font-size: 15px; text-transform: uppercase; font-weight: bold; min-height: 18px; }
+    .lbl-address { font-size: 13px; text-transform: uppercase; margin-top: 10px; min-height: 16px; }
+    .lbl-product { font-weight: bold; font-size: 16px; text-transform: uppercase; }
+    
+    .details-box { width: 100%; border-collapse: collapse; font-family: 'Times New Roman', Times, serif; border-top: none; }
+    .details-box td { border: 1.5px solid #000; border-top: none; padding: 12px; font-weight: bold; font-size: 14px; text-transform: uppercase; text-align: center; height: 44px; }
+    
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <header>
+      <h1>Label Generator </h1>
+      <p>Package Data Label Generator</p>
+    </header>
+
+    <div class="section-title">Ship From</div>
+    <div class="form-group">
+      <label>Company Name</label>
+      <input type="text" id="shipFromCompany" value="EXPERT DEVELOPMENT COMPANY FOR INDUSTRY">
+    </div>
+    <div class="form-group">
+      <label>Address</label>
+      <input type="text" id="shipFromAddress" value="AL DUWADMI, KINGDOM OF SAUDI ARABIA">
+    </div>
+
+    <div class="section-title">Ship To</div>
+    <div class="form-group">
+      <label>Company Name</label>
+      <input type="text" id="shipToCompany" value="">
+    </div>
+    <div class="form-group">
+      <label>Address</label>
+      <input type="text" id="shipToAddress" value="">
+    </div>
+
+    <div class="section-title">Product Details</div>
+    <div class="form-group">
+      <label>Product Name</label>
+      <input type="text" id="productName" value="">
+    </div>
+    
+    <div class="form-group">
+      <label>Net Weight</label>
+      <input type="text" id="netWeight" value="">
+    </div>
+    <div class="form-group">
+      <label>Gross Weight</label>
+      <input type="text" id="grossWeight" value="">
+    </div>
+    <div class="form-group">
+      <label>No of Reels</label>
+      <input type="text" id="reelsCount" value="">
+    </div>
+    <div class="form-group">
+      <label>No of Pieces</label>
+      <input type="text" id="piecesCount" value="">
+    </div>
+    <div class="form-group">
+      <label>Pallet Code</label>
+      <input type="text" id="palletCode" value="">
+    </div>
+
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="date">
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-secondary" id="btnReset">Reset</button>
+      <button class="btn btn-primary" id="btnDownload">Save PDF</button>
+      <button class="btn btn-primary" id="btnPrint">Print</button>
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="a4-preview-container">
+      <div class="a4-preview">
+        <!-- Live Preview Label -->
+        <table class="label-box">
+          <tr>
+            <td style="width: 50%;">
+              <div class="lbl-title">SHIP FROM</div>
+              <div class="lbl-company" id="p-shipFromCompany"></div>
+              <div class="lbl-address" id="p-shipFromAddress"></div>
+            </td>
+            <td style="width: 50%;">
+              <div class="lbl-title">SHIP TO</div>
+              <div class="lbl-company" id="p-shipToCompany"></div>
+              <div class="lbl-address" id="p-shipToAddress"></div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding: 16px 12px;">
+              <div class="lbl-product">PRODUCT NAME: <span id="p-productName"></span></div>
+            </td>
+          </tr>
+        </table>
+        <table class="details-box">
+          <tr>
+            <td style="width: 25%;">NET WEIGHT</td>
+            <td style="width: 25%;" id="p-netWeight"></td>
+            <td style="width: 25%;">GROSS WEIGHT</td>
+            <td style="width: 25%;" id="p-grossWeight"></td>
+          </tr>
+          <tr>
+            <td>NO OF REELS</td>
+            <td id="p-reelsCount"></td>
+            <td>NO OF PIECES</td>
+            <td id="p-piecesCount"></td>
+          </tr>
+          <tr>
+            <td>PALLET CODE</td>
+            <td id="p-palletCode"></td>
+            <td>DATE</td>
+            <td id="p-date"></td>
+          </tr>
+        </table>
+        
+        <div style="display: flex; justify-content: center; align-items: center; margin-top: 60px; height: 120mm;">
+          <img id="p-qrcode" src="" alt="" style="width: 100mm; height: 100mm; object-fit: contain;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

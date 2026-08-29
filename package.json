@@ -1,0 +1,35 @@
+{
+  "name": "a4-sheet-generator",
+  "version": "1.0.0",
+  "description": "Generate A4 sheets with info table and QR code",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "author": {
+    "name": "Shihab Rahman",
+    "url": "https://shihabsaleem.site"
+  },
+  "build": {
+    "appId": "com.expert.labelgenerator",
+    "productName": "Label Generator",
+    "asarUnpack": [
+      "**/node_modules/pdf-to-printer/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "qricon.png"
+    }
+  },
+  "dependencies": {
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "pdf-to-printer": "^5.8.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "electron": "^44.0.0",
+    "electron-builder": "^26.15.3"
+  }
+}
