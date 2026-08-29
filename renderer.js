@@ -198,6 +198,12 @@ async function generatePDFDoc() {
 }
 
 async function downloadPDF() {
+  const btn = document.getElementById("btnDownload");
+  if (btn.disabled) return;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+  
   try {
     const doc = await generatePDFDoc();
     // Output and save
@@ -208,25 +214,39 @@ async function downloadPDF() {
       filename: toAddress
     });
     if (result.success) {
-      alert(`PDF saved to:\n${result.path}`);
+      alert(`PDF saved successfully to:\n${result.path}`);
     }
   } catch (err) {
     alert("Error generating PDF: " + err.message);
     console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 
 async function printPDF() {
+  const btn = document.getElementById("btnPrint");
+  if (btn.disabled) return;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Printing...";
+  
   try {
     const doc = await generatePDFDoc();
     const pdfArrayBuffer = doc.output("arraybuffer");
     const result = await ipcRenderer.invoke("print-pdf", Array.from(new Uint8Array(pdfArrayBuffer)));
     if (!result.success) {
-      alert("Error printing PDF.");
+      alert("Error printing PDF: " + (result.error || "Unknown error"));
+    } else {
+      alert("Print job sent successfully!");
     }
   } catch (err) {
     alert("Error printing PDF: " + err.message);
     console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 
